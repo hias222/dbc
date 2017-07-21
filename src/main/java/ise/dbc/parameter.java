@@ -54,7 +54,7 @@ import org.apache.commons.logging.impl.Log4JLogger;
 public class parameter {
 
 
-
+    // see http://www.javaquery.com/2015/10/how-to-read-properties-file-from.html
 
     private static final Log LOGGER = LogFactory.getLog(ise.dbc.parameter.class);
 
