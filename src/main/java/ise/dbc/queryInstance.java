@@ -1,35 +1,21 @@
 package ise.dbc;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.impl.Log4JLogger;
+
 import java.io.IOException;
-
 import java.net.URISyntaxException;
-
 import java.sql.Connection;
-
-import java.sql.Date;
 import java.sql.SQLException;
-
 import java.sql.Timestamp;
-
-import oracle.sql.DATE;
-
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.config.XMLConfigurationFactory;
+import java.util.concurrent.*;
 
 public class queryInstance implements Runnable {
 
-    static {
-        System.setProperty(XMLConfigurationFactory.CONFIGURATION_FILE_PROPERTY, "log4j2.xml");
-    }
 
-    private static final Logger LOGGER = LogManager.getLogger(ise.dbc.queryInstance.class);
+
+    private static final Log LOGGER = LogFactory.getLog(ise.dbc.queryInstance.class);
 
     private Connection InstanceConnection;
     private Connection InstanceConnection2;
@@ -51,7 +37,7 @@ public class queryInstance implements Runnable {
     private int thread_wait;
     private int PollingMinutesSession;
 
-    public queryInstance(parameter param, int Node) throws RuntimeException,IOException, URISyntaxException {
+    public queryInstance(parameter param, int Node) throws RuntimeException, IOException, URISyntaxException {
 
         //we said Node so calculate -1 depends on array counting in java
         this.instance_nr = Node - 1;
@@ -61,10 +47,10 @@ public class queryInstance implements Runnable {
 
         //here we must ad some actual infos of instance, maybe it restarted etc.
 
-        
+
         InstanceConnection = param.getSourceConnection(instance_nr);
         InstanceConnection2 = param.getSourceConnection(instance_nr);
-        
+
 
         //this.lastrun = param.getLastRun(instance_nr);
         this.lastrun = param.getStartupTime(instance_nr);
@@ -110,10 +96,10 @@ public class queryInstance implements Runnable {
         }
 
         getSessionThread =
-            new getSessionData(InstanceConnection, this.thread_sessiondir, this.thread_script, this.thread_run,
-                               this.thread_wait, this.PollingMinutesSession);
+                new getSessionData(InstanceConnection, this.thread_sessiondir, this.thread_script, this.thread_run,
+                        this.thread_wait, this.PollingMinutesSession);
 
-  
+
         while (true) {
 
             i++;
@@ -134,7 +120,7 @@ public class queryInstance implements Runnable {
             //get last run date
             this.dbDate = param.getLastRunDate(instance_nr);
 
-       /**
+            /**
              * collection Session Data
              * start thread getSessionData
              */

@@ -40,22 +40,16 @@ import oracle.jdbc.OracleTypes;
 import oracle.sql.CLOB;
 import oracle.sql.DATE;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.config.XMLConfigurationFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.impl.Log4JLogger;
 
 
 public class getClob implements Runnable {
 
-
-    static {
-        System.setProperty(XMLConfigurationFactory.CONFIGURATION_FILE_PROPERTY, "log4j2.xml");
-    }
-
-    private static final Logger LOGGER = LogManager.getLogger(ise.dbc.getClob.class);
+    private static Log LOGGER = LogFactory.getLog(ise.dbc.getClob.class);
 
     private Object then;
-
 
     private Connection conn;
     private String BaseTable;
@@ -139,8 +133,7 @@ public class getClob implements Runnable {
     }
 
     /**
-     * @param BaseName
-     * Table BaseName vsql or vsql_plan
+     * @param BaseName Table BaseName vsql or vsql_plan
      */
 
 
@@ -255,8 +248,8 @@ public class getClob implements Runnable {
 
 
             sqlText =
-                "select sum (round(p.pga_used_mem / 1024 / 1024)) PGA \n" + "  from V$process p, V$session s \n" +
-                " where s.paddr = p.addr \n" + "   and s.username = upper('" + username + "') ";
+                    "select sum (round(p.pga_used_mem / 1024 / 1024)) PGA \n" + "  from V$process p, V$session s \n" +
+                            " where s.paddr = p.addr \n" + "   and s.username = upper('" + username + "') ";
 
 
             LOGGER.trace("getPGA " + sqlText);
@@ -357,7 +350,7 @@ public class getClob implements Runnable {
 
             String Start_before = this.beforeKPI.toString().substring(0, beforeKPI.toString().indexOf("."));
             String Start_lastrun = this.lastrunKPI.toString().substring(0, lastrunKPI.toString().indexOf("."));
-            
+
             LOGGER.info("get KPIs from " + Start_before + " " + Start_lastrun);
 
 
@@ -430,12 +423,12 @@ public class getClob implements Runnable {
 
 
             LOGGER.debug("new Name is " + param.getSessionDir(this.instance_nr) + "/KPI_" + this.table_name + "_" +
-                         strDate + ".txt");
+                    strDate + ".txt");
 
             //strDate
             File outputTextFile2 =
-                new File(param.getSessionDir(this.instance_nr) + "/KPI_" + this.table_name + "_" + strDate +
-                         ".txt");
+                    new File(param.getSessionDir(this.instance_nr) + "/KPI_" + this.table_name + "_" + strDate +
+                            ".txt");
 
             if (outputTextFile1.exists()) {
                 Files.move(outputTextFile1.toPath(), outputTextFile2.toPath(), StandardCopyOption.ATOMIC_MOVE);
@@ -452,7 +445,7 @@ public class getClob implements Runnable {
             //throw e;
             throw new RuntimeException(e);
         } catch (Exception e) {
-            LOGGER.error("other  getKPI " );
+            LOGGER.error("other  getKPI ");
             e.printStackTrace();
 
 
@@ -468,7 +461,7 @@ public class getClob implements Runnable {
         try {
 
             LOGGER.info("getKPIFromSQL Node " + (this.instance_nr + 1) + " time " + this.beforeKPI.toString() +
-                        " to now " + this.lastrunKPI.toString());
+                    " to now " + this.lastrunKPI.toString());
 
             sqlText = "select ";
             boolean first = true;
@@ -517,21 +510,21 @@ public class getClob implements Runnable {
         String sqlText;
 
         sqlText =
-            "/* Load data from v$sql ****************************" +
-            "* from clobs into files ***************************" +
-            "* dbanalytic db monitoring for sqls ***************************" + "*/" + "DECLARE \n" +
-            "  c_sessions sys_refCursor;\n" + "start_time               VARCHAR2(30);\n" +
-            "end_time               VARCHAR2(30);\n" + " begin\n";
+                "/* Load data from v$sql ****************************" +
+                        "* from clobs into files ***************************" +
+                        "* dbanalytic db monitoring for sqls ***************************" + "*/" + "DECLARE \n" +
+                        "  c_sessions sys_refCursor;\n" + "start_time               VARCHAR2(30);\n" +
+                        "end_time               VARCHAR2(30);\n" + " begin\n";
 
         sqlText = sqlText + " start_time := ? ;" + " end_time := ?;";
 
         sqlText =
-            sqlText + " -- DBANALYTIC GET CLOBS FROM SQL TO FILE \n" + "OPEN c_sessions FOR \n" +
-            "-- select for clob in time window \n" +
-            "select /* get SQL clob dbanalytic */ SQLID, date_first, FULLTEXT, PARSING_SCHEMA_NAME from (" +
-            "select a.SQL_ID SQLID , b.FIRST_LOAD_TIME, b.SQL_FULLTEXT FULLTEXT,date_first, a.PARSING_SCHEMA_NAME" +
-            "  from (select distinct t.SQL_ID, first_load_time," +
-            " to_date(t.first_load_time,'YYYY-MM-DD/HH24:MI:SS') date_first , parsing_schema_name" + "  from v$sql t ";
+                sqlText + " -- DBANALYTIC GET CLOBS FROM SQL TO FILE \n" + "OPEN c_sessions FOR \n" +
+                        "-- select for clob in time window \n" +
+                        "select /* get SQL clob dbanalytic */ SQLID, date_first, FULLTEXT, PARSING_SCHEMA_NAME from (" +
+                        "select a.SQL_ID SQLID , b.FIRST_LOAD_TIME, b.SQL_FULLTEXT FULLTEXT,date_first, a.PARSING_SCHEMA_NAME" +
+                        "  from (select distinct t.SQL_ID, first_load_time," +
+                        " to_date(t.first_load_time,'YYYY-MM-DD/HH24:MI:SS') date_first , parsing_schema_name" + "  from v$sql t ";
 
         if (ignored_schemas.length > 0) {
 
@@ -547,9 +540,9 @@ public class getClob implements Runnable {
         }
 
         sqlText =
-            sqlText + "  ) " + " order by to_date(t.first_load_time,'YYYY-MM-DD/HH24:MI:SS') ) a," + " v$sql b" + " where b.SQL_ID = a.SQL_ID" +
-            " and a.first_load_time = b.first_load_TIME and a.parsing_schema_name = b.parsing_schema_name) \n" +
-            "where ";
+                sqlText + "  ) " + " order by to_date(t.first_load_time,'YYYY-MM-DD/HH24:MI:SS') ) a," + " v$sql b" + " where b.SQL_ID = a.SQL_ID" +
+                        " and a.first_load_time = b.first_load_TIME and a.parsing_schema_name = b.parsing_schema_name) \n" +
+                        "where ";
         /*
         sqlText =
             sqlText + " date_first >= to_date( '" + Start_before + "','YYYY-MM-DD/HH24:MI:SS')" +
@@ -557,8 +550,8 @@ public class getClob implements Runnable {
 */
 
         sqlText =
-            sqlText + " date_first >= to_date( start_time ,'YYYY-MM-DD/HH24:MI:SS')" +
-            " and date_first < to_date( end_time ,'YYYY-MM-DD/HH24:MI:SS')";
+                sqlText + " date_first >= to_date( start_time ,'YYYY-MM-DD/HH24:MI:SS')" +
+                        " and date_first < to_date( end_time ,'YYYY-MM-DD/HH24:MI:SS')";
 
         sqlText = sqlText + " and rownum < " + this.chunksize + " ;\n";
 
@@ -603,14 +596,14 @@ public class getClob implements Runnable {
 
             //stmt = conn.createStatement();
 
-         
+
             String Start_before = this.before.toString().substring(0, before.toString().indexOf("."));
             String Start_lastrun = this.lastrun.toString().substring(0, this.lastrun.toString().indexOf("."));
-            
+
             LOGGER.info("getCLOBFromSQL Node " + (this.instance_nr + 1) + "  time " + Start_before + " " +
-                        Start_lastrun);
-            
-            
+                    Start_lastrun);
+
+
             sqlText = this.generateSQLforMonitoring();
 
             stmt = conn.prepareCall(sqlText);
@@ -657,7 +650,7 @@ public class getClob implements Runnable {
                     chunkSize = xmlDocument.getChunkSize();
                     textBuffer = new char[chunkSize];
                     LOGGER.trace(Filename + " " + clobLength + " " + chunkSize + " " + sqlid + " " + this.before +
-                                 " to " + this.lastrun);
+                            " to " + this.lastrun);
 
                     try {
 
@@ -746,7 +739,7 @@ public class getClob implements Runnable {
             throw new RuntimeException(e);
 
         } catch (Exception e) {
-            LOGGER.error("other getCLOBFromSQL " );
+            LOGGER.error("other getCLOBFromSQL ");
             //e.printStackTrace();
             throw new RuntimeException(e);
 
@@ -761,13 +754,13 @@ public class getClob implements Runnable {
 
 
         ResultSet rset = stmt.executeQuery(sqlText);
-        
+
 
         this.before = this.lastrun;
         this.beforeKPI = this.lastrunKPI;
-       
-       LOGGER.info("Instance " + this.instance_nr + " Last Run Time " + this.lastrunKPI.toString() + " Maximum SQL Value " +this.lastrun.toString() );
-       
+
+        LOGGER.info("Instance " + this.instance_nr + " Last Run Time " + this.lastrunKPI.toString() + " Maximum SQL Value " + this.lastrun.toString());
+
 
         while (rset.next()) {
             this.lastrun = (rset).getTimestamp("actual_date");
@@ -782,7 +775,7 @@ public class getClob implements Runnable {
 
 
     public void getCLOBFromView(Connection conn, Number id, String schema, String Filename) throws IOException,
-                                                                                                   SQLException {
+            SQLException {
 
         String sqlText = null;
         Statement stmt = null;
@@ -822,9 +815,9 @@ public class getClob implements Runnable {
                 "FOR UPDATE";
     */
             sqlText =
-                "select t.view_name VIEWS, t.text_length, t.text TEXT , owner" + " from dba_views t " +
-                " where rownum < " + id + " and OWNER like '" + schema + "'" +
-                " and owner not in ('SYS', 'MDSYS' ,'WMSYS', 'SQLTXPLAIN', 'CTXSYS', 'EXFSYS', 'XDB')";
+                    "select t.view_name VIEWS, t.text_length, t.text TEXT , owner" + " from dba_views t " +
+                            " where rownum < " + id + " and OWNER like '" + schema + "'" +
+                            " and owner not in ('SYS', 'MDSYS' ,'WMSYS', 'SQLTXPLAIN', 'CTXSYS', 'EXFSYS', 'XDB')";
 
             rset = stmt.executeQuery(sqlText);
 
@@ -860,7 +853,7 @@ public class getClob implements Runnable {
             conn.commit();
 
             System.out.println("==========================================================\n" + "  CLOB read\n" +
-                               "==========================================================\n");
+                    "==========================================================\n");
 
             //return xmlDocument;
 
@@ -896,7 +889,7 @@ public class getClob implements Runnable {
                     attributes = Files.readAttributes(filePath, BasicFileAttributes.class);
                 } catch (IOException exception) {
                     System.out.println("Exception handled when trying to get file " + "attributes: " +
-                                       exception.getMessage());
+                            exception.getMessage());
                 }
 
 
@@ -907,7 +900,7 @@ public class getClob implements Runnable {
                     attributes2 = Files.readAttributes(filePath2, BasicFileAttributes.class);
                 } catch (IOException exception) {
                     System.out.println("Exception handled when trying to get file " + "attributes: " +
-                                       exception.getMessage());
+                            exception.getMessage());
                 }
 
 
@@ -923,11 +916,11 @@ public class getClob implements Runnable {
                 if ((milliseconds > Long.MIN_VALUE) && (milliseconds < Long.MAX_VALUE)) {
                     minutes = Math.round((milliseconds - milliseconds2) / 1000 / 60);
                     LOGGER.debug("Compare " + filePath.toString() + " " + filePath2.toString() + " " +
-                                 Math.round((milliseconds - milliseconds2) / 1000 / 60) + " Minutes old ");
+                            Math.round((milliseconds - milliseconds2) / 1000 / 60) + " Minutes old ");
 
                     LOGGER.debug("Creation time \n" + attributes.creationTime().toString() + " \n " +
-                                 attributes2.creationTime().toString() + " \n " + milliseconds2 + " \n " +
-                                 milliseconds);
+                            attributes2.creationTime().toString() + " \n " + milliseconds2 + " \n " +
+                            milliseconds);
 
 
                 }

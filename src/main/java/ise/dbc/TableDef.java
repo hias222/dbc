@@ -40,12 +40,12 @@ public class TableDef {
             }
 
         }
-        
+
         if (value.isEmpty()) {
             throw new EmptyStackException();
         }
-         
-       
+
+
         return value;
 
     }

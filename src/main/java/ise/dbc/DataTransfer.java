@@ -52,20 +52,17 @@ import oracle.sql.*;
 // Needed for Oracle JDBC Extended Classes
 import oracle.jdbc.*;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.config.XMLConfigurationFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.impl.Log4JLogger;
 
 
 public class DataTransfer {
 
     // too load it out of file system
 
-    static {
-        System.setProperty(XMLConfigurationFactory.CONFIGURATION_FILE_PROPERTY, "log4j2.xml");
-    }
 
-    private static final Logger LOGGER = LogManager.getLogger(ise.dbc.DataTransfer.class);
+    private static final Log LOGGER = LogFactory.getLog(ise.dbc.DataTransfer.class);
 
     public static boolean running;
 
@@ -80,6 +77,7 @@ public class DataTransfer {
      * Default constructor used to create this object. Responsible for setting
      * this object's creation date, as well as incrementing the number instances
      * of this object.
+     *
      * @param args Array of string arguments passed in from the command-line.
      * @throws java.io.IOException
      */
@@ -136,6 +134,7 @@ public class DataTransfer {
 
     /**
      * Validate command-line arguments to this program.
+     *
      * @param args Array of string arguments passed in from the command-line.
      * @return Boolean - value of true if correct arguments, false otherwise.
      */
@@ -153,6 +152,7 @@ public class DataTransfer {
     /**
      * Override the Object toString method. Used to print a version of this
      * object to the console.
+     *
      * @return String - String to be returned by this object.
      */
     public String toString() {
@@ -171,6 +171,7 @@ public class DataTransfer {
 
     /**
      * Sole entry point to the class and application.
+     *
      * @param args Array of string arguments passed in from the command-line.
      */
     public static void main(String[] args) throws IOException {
@@ -180,7 +181,6 @@ public class DataTransfer {
 
         DataTransfer cLOBFileExample = null;
         System.out.println("DBANALYTIC Start");
-        System.out.println(LOGGER.getName());
         LOGGER.debug("Version " + VERSIONDBC + " start");
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("Start");

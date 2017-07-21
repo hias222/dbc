@@ -46,20 +46,17 @@ import java.util.Properties;
 
 
 import java.util.Set;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.config.XMLConfigurationFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.impl.Log4JLogger;
 
 
 public class parameter {
 
 
-    static {
-        System.setProperty(XMLConfigurationFactory.CONFIGURATION_FILE_PROPERTY, "log4j2.xml");
-    }
 
-    private static final Logger LOGGER = LogManager.getLogger(ise.dbc.parameter.class);
+
+    private static final Log LOGGER = LogFactory.getLog(ise.dbc.parameter.class);
 
     //  private String PropertiesFile;
 
@@ -74,7 +71,7 @@ public class parameter {
     // Attention must be in java files and right deployment
     private String A_Session_Script = "/sql/dbc_sessions_java.sql";
 
-    private String[] S_IGNORED_SCHEMAS = { "SYS", "SYSTEM" };
+    private String[] S_IGNORED_SCHEMAS = {"SYS", "SYSTEM"};
 
     private Integer A_Session_Wait = 100;
     private Integer A_Session_Runs = 100;
@@ -127,6 +124,7 @@ public class parameter {
     public boolean isWriteToLocal() {
         return WriteToLocal;
     }
+
     private boolean WriteToHDFS;
     private boolean WriteToLocal;
 
@@ -152,7 +150,7 @@ public class parameter {
     private String S_inputdir;
 
     private String S_sqltexttable;
-    
+
     private String S_sessiontable;
     private String S_ResolutionTab;
     private String S_ResolutionCol;
@@ -191,7 +189,7 @@ public class parameter {
 
     /**
      * @param PropertiesFile
-     * @param Source true=Source false=destination repository
+     * @param Source         true=Source false=destination repository
      */
     public parameter(String PropertiesFile, boolean Source) {
         // get properties out of db-connection.properties
@@ -260,7 +258,7 @@ public class parameter {
 
                 this.SetReadPosition("analyticserver.metadata.pollingSessionMinutes");
                 A_Session_Polling =
-                    Integer.parseInt(properties.getProperty("analyticserver.metadata.pollingSessionMinutes"));
+                        Integer.parseInt(properties.getProperty("analyticserver.metadata.pollingSessionMinutes"));
 
 
                 this.SetReadPosition("analyticserver.metadata.sessionWait");
@@ -268,12 +266,11 @@ public class parameter {
 
                 this.SetReadPosition("analyticserver.metadata.usemaxPGAMB");
                 A_max_pga_mb = Integer.parseInt(properties.getProperty("analyticserver.metadata.usemaxPGAMB"));
-                
-            
+
 
                 this.SetReadPosition("analyticserver.metadata.maxNumberLoadSQLs");
                 A_max_number_load_sqls =
-                    Integer.parseInt(properties.getProperty("analyticserver.metadata.maxNumberLoadSQLs"));
+                        Integer.parseInt(properties.getProperty("analyticserver.metadata.maxNumberLoadSQLs"));
                 //A_change_hours
 
                 this.SetReadPosition("set number of instances");
@@ -315,12 +312,12 @@ public class parameter {
                 //databaseoutput.connection.url
 
                 getDetailedTableData(properties);
-                
+
                 position_read = "analyticserver.metadata.cleanafterhours";
                 D_clean_hours = Integer.parseInt(properties.getProperty("analyticserver.metadata.cleanafterhours"));
-                
+
                 position_read =
-                    "databaseoutput.commiteverylines (The values are inserted in batch mode. After ths numbers of rows the insert starts.";
+                        "databaseoutput.commiteverylines (The values are inserted in batch mode. After ths numbers of rows the insert starts.";
                 D_commit_lines = Integer.parseInt(properties.getProperty("databaseoutput.commiteverylines"));
 
                 //databaseoutput.type
@@ -338,16 +335,16 @@ public class parameter {
 
                     //position_read = "databaseoutput.SQLIDChangeHours";
                     //D_change_hours = Integer.parseInt(properties.getProperty("databaseoutput.SQLIDChangeHours"));
-                    
+
                     //analyticserver.metadata.cleanafterhours
-                   
+
 
                     this.SetReadPosition("databaseoutput.connection.url");
                     S_ORACLE_TNS = properties.getProperty("databaseoutput.connection.url");
                     S_ORACLE_USER = properties.getProperty("databaseoutput.user");
                     S_ORACLE_PWD = properties.getProperty("databaseoutput.password");
 
-                    
+
                 }
 
                 if (S_TYPE.equalsIgnoreCase("LOCAL")) {
@@ -368,8 +365,8 @@ public class parameter {
                     LOGGER.debug("USE HDFS");
                     this.WriteToHDFS = true;
                     //base_config_dir
-                   
-                    
+
+
                     //S_BaseDir
                     position_read = "databaseoutput.basedirectory";
                     S_BaseDir = properties.getProperty("databaseoutput.basedirectory");
@@ -433,16 +430,16 @@ public class parameter {
                     for (String base_name : VSQL_BASE) {
                         this.SetReadPosition("databaseoutput.kpi." + base_name + ".fields");
                         String[] BASE_TABLE =
-                            properties.getProperty("databaseoutput.kpi." + base_name + ".fields").split(",");
+                                properties.getProperty("databaseoutput.kpi." + base_name + ".fields").split(",");
 
 
                         this.SetReadPosition("databaseoutput.kpi." + base_name + ".aggregation");
                         String[] BASE_aggregation =
-                            properties.getProperty("databaseoutput.kpi." + base_name + ".aggregation").split(",");
+                                properties.getProperty("databaseoutput.kpi." + base_name + ".aggregation").split(",");
 
                         this.SetReadPosition("databaseoutput.kpi." + base_name + ".keys");
                         String[] BASE_keys =
-                            properties.getProperty("databaseoutput.kpi." + base_name + ".keys").split(",");
+                                properties.getProperty("databaseoutput.kpi." + base_name + ".keys").split(",");
 
                         this.SetReadPosition("databaseoutput.kpi." + base_name + ".table");
                         String TABLE_NAME = properties.getProperty("databaseoutput.kpi." + base_name + ".table");
@@ -471,11 +468,11 @@ public class parameter {
                             String row = BASE_TABLE[i];
                             this.SetReadPosition("databaseoutput.kpi." + base_name + ".fields." + row);
                             String[] propertyvalue =
-                                properties.getProperty("databaseoutput.kpi." + base_name + ".fields." + row).split(",");
+                                    properties.getProperty("databaseoutput.kpi." + base_name + ".fields." + row).split(",");
 
                             ColDef newColumn = new ColDef(row);
                             newColumn.addCollTyps(Integer.parseInt(propertyvalue[0]), propertyvalue[1],
-                                                  propertyvalue[2]);
+                                    propertyvalue[2]);
                             newentry.addColumnDef(newColumn);
 
                         }
@@ -559,21 +556,21 @@ public class parameter {
             working = false;
             LOGGER.info("Create or change Table");
             LOGGER.error("create table " + TableName + "\n" + "        (\n" + "        SQLID VARCHAR2(13 BYTE),\n" +
-                         "        SCHEMA_NAME VARCHAR2(30 BYTE),\n" + "        SQL_FULLTEXT CLOB,\n" +
-                         "        CREATION_TIME date\n" + "        );");
+                    "        SCHEMA_NAME VARCHAR2(30 BYTE),\n" + "        SQL_FULLTEXT CLOB,\n" +
+                    "        CREATION_TIME date\n" + "        );");
 
         }
 
 
         TableName = checkPram.getS_ResolutionTab();
 
-        ALLTables = ALLTables + ", " +  TableName;
+        ALLTables = ALLTables + ", " + TableName;
 
         LOGGER.debug("check " + TableName);
 
         stmt =
-            "select SQLID, OBJECT_SCHEMA,OBJECT_NAME,OBJECT_TYPE, PARENT_OBJ_ID,PARENT_OBJ_SCHEMA," +
-            "PARENT_OBJ_NAME,PARENT_OBJ_TYPE,DEPTH from " + TableName + " where rownum = 1";
+                "select SQLID, OBJECT_SCHEMA,OBJECT_NAME,OBJECT_TYPE, PARENT_OBJ_ID,PARENT_OBJ_SCHEMA," +
+                        "PARENT_OBJ_NAME,PARENT_OBJ_TYPE,DEPTH from " + TableName + " where rownum = 1";
 
         try {
             ps = destination.prepareStatement(stmt);
@@ -586,11 +583,11 @@ public class parameter {
             LOGGER.info("Create or change Table");
 
             LOGGER.error("CREATE TABLE " + TableName + "\n" + "(\n" + "  ID NUMBER(10, 0) NOT NULL \n" +
-                         ", SQLID VARCHAR2(64) \n" + ", OBJECT_SCHEMA VARCHAR2(64) \n" +
-                         ", OBJECT_NAME VARCHAR2(1024) \n" + ", OBJECT_TYPE VARCHAR2(32) \n" +
-                         ", PARENT_OBJ_ID NUMBER(10,0)\n" + ", PARENT_OBJ_SCHEMA VARCHAR2(64) \n" +
-                         ", PARENT_OBJ_NAME VARCHAR2(64) \n" + ", PARENT_OBJ_TYPE VARCHAR2(64) \n" +
-                         ", DEPTH NUMBER(5, 0) \n);");
+                    ", SQLID VARCHAR2(64) \n" + ", OBJECT_SCHEMA VARCHAR2(64) \n" +
+                    ", OBJECT_NAME VARCHAR2(1024) \n" + ", OBJECT_TYPE VARCHAR2(32) \n" +
+                    ", PARENT_OBJ_ID NUMBER(10,0)\n" + ", PARENT_OBJ_SCHEMA VARCHAR2(64) \n" +
+                    ", PARENT_OBJ_NAME VARCHAR2(64) \n" + ", PARENT_OBJ_TYPE VARCHAR2(64) \n" +
+                    ", DEPTH NUMBER(5, 0) \n);");
 
 
         }
@@ -633,7 +630,7 @@ public class parameter {
             working = false;
             LOGGER.info("Create or change Table");
             LOGGER.error("CREATE TABLE " + TableName + "\n" + "(\n" + "  OBJECT_ID NUMBER(10, 0) NOT NULL \n" +
-                         ", COLUMN_NAME VARCHAR2(64) NOT NULL \n" + ", COLUMN_USE VARCHAR2(20) NOT NULL \n" + ");\n");
+                    ", COLUMN_NAME VARCHAR2(64) NOT NULL \n" + ", COLUMN_USE VARCHAR2(20) NOT NULL \n" + ");\n");
 
 
         }
@@ -647,7 +644,7 @@ public class parameter {
         boolean start = true;
 
         List<String> necassaryFields =
-            new ArrayList<>(Arrays.asList("SQL_ID", "SQL_CHILD_NUMBER", "SQL_PREV_ID", "PREV_CHILD_NUMBER"));
+                new ArrayList(Arrays.asList("SQL_ID", "SQL_CHILD_NUMBER", "SQL_PREV_ID", "PREV_CHILD_NUMBER"));
 
         int foundFields = 0;
 
@@ -831,36 +828,36 @@ public class parameter {
                                 this.SetReadPosition(runsequence);
 
                                 LOGGER.trace(" --- number " + runsequence + " in " + key4 + " " +
-                                             key4.toUpperCase().indexOf("ACTIVE"));
+                                        key4.toUpperCase().indexOf("ACTIVE"));
                                 String runname = key4.substring(0, key4.toUpperCase().indexOf("ACTIVE"));
                                 LOGGER.trace(" --- name " + runname);
 
                                 this.SetReadPosition("database.metadata.kpi." + runname + "Active" + runsequence);
 
                                 String TEMP_ACTIVE =
-                                    properties.getProperty("database.metadata.kpi." + runname + "Active" + runsequence);
+                                        properties.getProperty("database.metadata.kpi." + runname + "Active" + runsequence);
 
                                 if (TEMP_ACTIVE.equalsIgnoreCase("TRUE")) {
                                     this.SetReadPosition("database.metadata.kpi." + runname + "Col" + runsequence);
 
                                     String TEMP_TABLE[] =
-                                        properties.getProperty("database.metadata.kpi." + runname + "Col" +
-                                                               runsequence).split(",");
+                                            properties.getProperty("database.metadata.kpi." + runname + "Col" +
+                                                    runsequence).split(",");
 
                                     this.SetReadPosition("database.metadata.kpi." + runname + runsequence);
 
                                     String TEMP_NAME =
-                                        properties.getProperty("database.metadata.kpi." + runname + runsequence);
+                                            properties.getProperty("database.metadata.kpi." + runname + runsequence);
 
                                     this.SetReadPosition("database.metadata.kpi." + runname + "Time" + runsequence);
 
                                     String TEMP_TIME =
-                                        properties.getProperty("database.metadata.kpi." + runname + "Time" +
-                                                               runsequence);
+                                            properties.getProperty("database.metadata.kpi." + runname + "Time" +
+                                                    runsequence);
 
                                     if (TEMP_TIME == null) {
                                         LOGGER.warn("no time where claus for table (" + position_read + ") " +
-                                                    TEMP_NAME);
+                                                TEMP_NAME);
                                     }
 
                                     VSQL_NAME.add(TEMP_NAME);
@@ -909,8 +906,8 @@ public class parameter {
                 for (int i = 0; i < S_NUMBER_INSTANCES; i++) {
                     output = output + i + ": " + S_ORACLE_JDBCS[i] + "\n";
                     output =
-                        output + "     " + this.DB_ID[i] + " " + this.DB_NAME[i] + " " + this.DB_INSTANCE_NAME[i] +
-                        " " + this.DB_STARTUP[i] + "\n";
+                            output + "     " + this.DB_ID[i] + " " + this.DB_NAME[i] + " " + this.DB_INSTANCE_NAME[i] +
+                                    " " + this.DB_STARTUP[i] + "\n";
                     output = output + "SQL Output Directory " + this.getSQLDir(i) + "\n";
                     output = output + "SESSION Output Directory " + this.getSessionDir(i) + "\n";
                 }
@@ -931,8 +928,8 @@ public class parameter {
             output = output + " SES Table\n";
             for (int i = 0; i < this.SESSION_TABLE.length; i++) {
                 output =
-                    output + " Column Name " + SESSION_TABLE[i] + ": " + SESSION_TABLE_DEFINITION[i][0] + " " +
-                    SESSION_TABLE_DEFINITION[i][1] + " " + SESSION_TABLE_DEFINITION[i][2] + "\n";
+                        output + " Column Name " + SESSION_TABLE[i] + ": " + SESSION_TABLE_DEFINITION[i][0] + " " +
+                                SESSION_TABLE_DEFINITION[i][1] + " " + SESSION_TABLE_DEFINITION[i][2] + "\n";
             }
         }
 
@@ -1005,13 +1002,13 @@ public class parameter {
 
     public String getSessionDir(int internal_nr) {
         String BASE_OUTPUT =
-            this.A_BASE_DIR + "/" + this.DB_NAME[internal_nr] + "/" + this.DB_INSTANCE_NAME[internal_nr];
+                this.A_BASE_DIR + "/" + this.DB_NAME[internal_nr] + "/" + this.DB_INSTANCE_NAME[internal_nr];
         return BASE_OUTPUT + "/" + this.BASE_SESSIONDIR;
     }
 
     public String getSQLDir(int internal_nr) {
         String BASE_OUTPUT =
-            this.A_BASE_DIR + "/" + this.DB_NAME[internal_nr] + "/" + this.DB_INSTANCE_NAME[internal_nr];
+                this.A_BASE_DIR + "/" + this.DB_NAME[internal_nr] + "/" + this.DB_INSTANCE_NAME[internal_nr];
         return BASE_OUTPUT + "/" + this.BASE_SQLDIR;
 
     }
@@ -1050,8 +1047,8 @@ public class parameter {
 
         //database,instance,username,sql_id,sql_child_number,sql_prev_id,PREV_CHILD_NUMBER
 
-        String[] standard_keys = new String[] {
-            "database", "instance", "username", "sql_id", "sql_child_number", "sql_prev_id", "PREV_CHILD_NUMBER"
+        String[] standard_keys = new String[]{
+                "database", "instance", "username", "sql_id", "sql_child_number", "sql_prev_id", "PREV_CHILD_NUMBER"
         };
 
 
@@ -1094,7 +1091,7 @@ public class parameter {
             ColDef Definition = new ColDef(this.SESSION_TABLE[i]);
             //Defenition.ColumnName = this.SESSION_TABLE[i];
             Definition.addCollTyps(Integer.parseInt(this.SESSION_TABLE_DEFINITION[i][0]),
-                                   this.SESSION_TABLE_DEFINITION[i][1], this.SESSION_TABLE_DEFINITION[i][2]);
+                    this.SESSION_TABLE_DEFINITION[i][1], this.SESSION_TABLE_DEFINITION[i][2]);
             // Defenition.Type = this.SESSION_TABLE_DEFINITION[i][1];
             //   Defenition.ColumnDescription = this.SESSION_TABLE_DEFINITION[i][2];
             //   Defenition.CSVColumnOrder = Integer.parseInt(this.SESSION_TABLE_DEFINITION[i][0]);
@@ -1207,9 +1204,6 @@ public class parameter {
             //System.out.println("Line read: " + line);
 
 
-
-
-
         }
 
         //System.out.println(xml);
@@ -1285,14 +1279,14 @@ public class parameter {
 
         //First we check if we have old runs
         //we search for some old instance run data
-        
+
         try {
 
-        Connection Base = this.getSourceConnection(internal_nr);
+            Connection Base = this.getSourceConnection(internal_nr);
 
-        String new_filename = this.S_STATE_FILE + "_" + internal_nr + ".txt";
+            String new_filename = this.S_STATE_FILE + "_" + internal_nr + ".txt";
 
-       
+
             Statement stmt = Base.createStatement();
             String SqlText = "select instance_name, STARTUP_TIME from v$instance";
             //select INSTANCE_NAME, startup_time from v$instance;
@@ -1413,13 +1407,13 @@ public class parameter {
         }
 
         if (!Files.exists(Paths.get(this.A_BASE_DIR + "/" + this.DB_NAME[instance_nr] + "/" +
-                                    this.DB_INSTANCE_NAME[instance_nr]))) {
+                this.DB_INSTANCE_NAME[instance_nr]))) {
             System.out.println("we must create one ..." + this.A_BASE_DIR + "/" + this.DB_NAME[instance_nr] + "/" +
-                               this.DB_INSTANCE_NAME[instance_nr]);
+                    this.DB_INSTANCE_NAME[instance_nr]);
 
             try {
                 Files.createDirectory(Paths.get(this.A_BASE_DIR + "/" + this.DB_NAME[instance_nr] + "/" +
-                                                this.DB_INSTANCE_NAME[instance_nr]));
+                        this.DB_INSTANCE_NAME[instance_nr]));
             } catch (IOException e) {
                 System.out.println(e);
                 System.exit(1);
@@ -1428,7 +1422,7 @@ public class parameter {
         }
 
         String BASE_OUTPUT =
-            this.A_BASE_DIR + "/" + this.DB_NAME[instance_nr] + "/" + this.DB_INSTANCE_NAME[instance_nr] + "/";
+                this.A_BASE_DIR + "/" + this.DB_NAME[instance_nr] + "/" + this.DB_INSTANCE_NAME[instance_nr] + "/";
 
         if (!Files.exists(Paths.get(BASE_OUTPUT + this.BASE_SQLDIR))) {
             try {

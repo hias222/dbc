@@ -19,17 +19,15 @@ import java.util.concurrent.Future;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.apache.commons.lang3.time.FastDateFormat;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.config.XMLConfigurationFactory;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 public class queryKPIs implements Runnable {
 
-    static {
-        System.setProperty(XMLConfigurationFactory.CONFIGURATION_FILE_PROPERTY, "log4j2.xml");
-    }
 
-    private static final Logger LOGGER = LogManager.getLogger(ise.dbc.queryKPIs.class);
+
+    private static final Log LOGGER = LogFactory.getLog(ise.dbc.queryKPIs.class);
 
     private parameter param;
     private int instance_nr;
@@ -44,7 +42,7 @@ public class queryKPIs implements Runnable {
     private String thread_script;
     private int thread_run;
     private int thread_wait;
-    
+
     private int intervall;
 
     private ExecutorService kpiservice;
@@ -98,10 +96,10 @@ public class queryKPIs implements Runnable {
 
         getSourceData = new getClob(param, instance_nr, this.dbDate);
         getSourceData.setConnection(InstanceConnection);
-        
+
         LOGGER.debug("KPI starting instance_nr " + (instance_nr + 1));
         F_SourceData = kpiservice.submit(getSourceData);
-        
+
 
         int i = 0;
 
@@ -115,7 +113,7 @@ public class queryKPIs implements Runnable {
         while (true) {
 
             i++;
-            
+
 
             if (InstanceConnection == null) {
                 try {
@@ -154,14 +152,14 @@ public class queryKPIs implements Runnable {
                 //old servcie is running
                 // we wait one time and stop it next tiome
                 numberworking++;
-                if (numberworking > 5 ){
+                if (numberworking > 5) {
                     numberworking = 0;
                     LOGGER.debug("shutdown at instance" + (instance_nr + 1));
                     kpiservice.shutdown();
                 } else {
                     LOGGER.debug("waited  " + numberworking + " round at instance" + (instance_nr + 1));
                 }
-                
+
                 //try {
                 //    kpiservice.awaitTermination(10, TimeUnit.SECONDS);
                 //} catch (InterruptedException e) {
@@ -170,24 +168,24 @@ public class queryKPIs implements Runnable {
 
 
             }
-            
+
             LOGGER.debug("KPI check time instance " + (instance_nr + 1));
 
 
             try {
-                
+
                 int waits = getWaitMilli();
                 LOGGER.debug("KPI Wait till next execution " + waits + " instance " + (instance_nr + 1));
 
-                
+
                 if (waits > 60000) {
                     LOGGER.debug("Waiting 60s instance " + (instance_nr + 1));
                     Thread.sleep(60000);
                     kpiservice.shutdown();
                     waits = waits - 60000;
                 }
-                
-                LOGGER.info("Waiting " + Math.round(waits/1000) + " seconds instance " + (instance_nr + 1));
+
+                LOGGER.info("Waiting " + Math.round(waits / 1000) + " seconds instance " + (instance_nr + 1));
                 Thread.sleep(waits);
 
 
@@ -199,11 +197,11 @@ public class queryKPIs implements Runnable {
         }
 
     }
-    
+
 
     private int getWaitMilli() {
-        
-     
+
+
         Date now = new Date();
 
         Calendar calendar = Calendar.getInstance();
@@ -211,27 +209,27 @@ public class queryKPIs implements Runnable {
         calendar.add(Calendar.SECOND, 61);
 
         int modulo = calendar.get(Calendar.MINUTE);
- 
-        
+
+
         int nextstart = 0;
 
         if (modulo > 0) {
-            
-            nextstart = (int)Math.round((Math.floor(modulo / intervall) + 1) * intervall);
+
+            nextstart = (int) Math.round((Math.floor(modulo / intervall) + 1) * intervall);
             calendar.add(Calendar.MINUTE, -modulo);
         }
 
-        
+
         calendar.set(Calendar.SECOND, 0);
         calendar.set(Calendar.MILLISECOND, 0);
         calendar.add(Calendar.MINUTE, nextstart);
-        
+
         LOGGER.info("Next start " + (calendar.getTime()) + " now " + now);
-        int diff = (int)(calendar.getTimeInMillis() - now.getTime());
-        
-              
-        if (diff < 0 ) {
-            diff=1;
+        int diff = (int) (calendar.getTimeInMillis() - now.getTime());
+
+
+        if (diff < 0) {
+            diff = 1;
         }
 
         return diff;

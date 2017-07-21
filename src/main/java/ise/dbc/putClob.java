@@ -34,11 +34,11 @@ public class putClob {
             stmt = conn.createStatement();
 
             PreparedStatement ps =
-                conn.prepareStatement("INSERT INTO test_clob (id, document_name, xml_document, timestamp) " +
-                                      "VALUES(" + id +
-                                      " , 'testin' , ? , sysdate)");
+                    conn.prepareStatement("INSERT INTO test_clob (id, document_name, xml_document, timestamp) " +
+                            "VALUES(" + id +
+                            " , 'testin' , ? , sysdate)");
             //("INSERT INTO raw_table VALUES(?)");
-            ((OraclePreparedStatement)ps).setCLOB(1, newxmlDocument);
+            ((OraclePreparedStatement) ps).setCLOB(1, newxmlDocument);
             ps.execute();
 
             conn.commit();

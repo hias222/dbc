@@ -2,7 +2,7 @@ package ise.dbc;
 
 import oracle.net.jdbc.TNSAddress.Description;
 
-import org.apache.logging.log4j.core.config.Order;
+//import org.apache.logging.log4j.core.config.Order;
 
 public class ColDef implements java.io.Serializable {
     @SuppressWarnings("compatibility:-6043852885703426182")
@@ -51,8 +51,8 @@ public class ColDef implements java.io.Serializable {
         this.ColumnType = ColumnType;
         this.ColumnDescription = ColumnDescription;
     }
-    
-    public String toString(){
+
+    public String toString() {
         String output = ("Name " + ColumnName + " Order " + CSVColumnOrder + " Type " + ColumnType + " Description " + ColumnDescription + " Value " + ColumnValue);
         return output;
     }

@@ -44,9 +44,9 @@ import oracle.jdbc.OracleTypes;
 
 import oracle.sql.CHAR;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.config.XMLConfigurationFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.impl.Log4JLogger;
 
 import sun.misc.IOUtils;
 
@@ -54,11 +54,9 @@ public class getSessionData implements Runnable {
 
     private Object OracleConnection;
 
-    static {
-        System.setProperty(XMLConfigurationFactory.CONFIGURATION_FILE_PROPERTY, "log4j2.xml");
-    }
 
-    private static final Logger LOGGER = LogManager.getLogger(ise.dbc.getSessionData.class);
+
+    private static final Log LOGGER = LogFactory.getLog(ise.dbc.getSessionData.class);
 
 
     private Connection conn = null;
@@ -94,12 +92,12 @@ public class getSessionData implements Runnable {
         this.PLSQLProcedureFile = SessionScript;
         this.Runs = Runs;
         this.Waits = Waits;
-        this.pollingMinutes = PollingMinutes;        
-       
+        this.pollingMinutes = PollingMinutes;
+
         Charset charset = Charset.defaultCharset();
         //charset = StandardCharsets.UTF_16LE;
-           
-           LOGGER.info("Default encoding: " + charset + " (Aliases: "
+
+        LOGGER.info("Default encoding: " + charset + " (Aliases: "
                 + charset.aliases() + ")");
 
 
@@ -110,14 +108,13 @@ public class getSessionData implements Runnable {
 
         int numrows = 0;
 
-      //  String[] searchList = { "�", "�", "�", "�", "�", "�", "�" };
-      //  String[] replaceList = { "Ae", "ae", "Oe", "oe", "Ue", "ue", "sz" };
-        
-      Charset charset = Charset.defaultCharset();
-      
-       // charset = StandardCharsets.UTF_16LE;
-      //charset =StandardCharsets.ISO_8859_1;
-         
+        //  String[] searchList = { "�", "�", "�", "�", "�", "�", "�" };
+        //  String[] replaceList = { "Ae", "ae", "Oe", "oe", "Ue", "ue", "sz" };
+
+        Charset charset = Charset.defaultCharset();
+
+        // charset = StandardCharsets.UTF_16LE;
+        //charset =StandardCharsets.ISO_8859_1;
 
 
         try {
@@ -147,7 +144,7 @@ public class getSessionData implements Runnable {
             } else {
                 //creation date
                 if (getCreationDate(outputTextFile1, tmp_file) > pollingMinutes) {
-                    
+
                     LOGGER.info("Should move it time " + this.FileName);
                     SimpleDateFormat sdfDate = new SimpleDateFormat("yyyyMMddHHmmss"); //dd/MM/yyyy
                     Date now = new Date();
@@ -169,20 +166,20 @@ public class getSessionData implements Runnable {
 
 
             conn = (Connection) OracleConnection;
-            
-         
-            outputFileOutputStream = new FileOutputStream(outputTextFile1,true);
+
+
+            outputFileOutputStream = new FileOutputStream(outputTextFile1, true);
             //outputFileOutputStream = new FileOutputStream(outputTextFile1,"UTF-8");
             //Charset.forName("UTF-8").newEncoder());
 
             outputOutputStreamWriter =
-                //new OutputStreamWriter(outputFileOutputStream, Charset.forName("UTF-8").newEncoder());
-                new OutputStreamWriter(outputFileOutputStream, charset);
-            
-     
+                    //new OutputStreamWriter(outputFileOutputStream, Charset.forName("UTF-8").newEncoder());
+                    new OutputStreamWriter(outputFileOutputStream, charset);
+
+
             LOGGER.debug("Output to = " + outputTextFile1); //+ "\n" + this.PLSQLProcedureFile);
             LOGGER.debug("Runs " + Runs + " Waits " + Waits);
-            
+
             //PrintWriter pw  =  new PrintWriter(outputFileOutputStream,true);
             outputBufferedWriter = new BufferedWriter(outputOutputStreamWriter);
 
@@ -197,39 +194,36 @@ public class getSessionData implements Runnable {
             cs.execute();
 
             cursorResultSet = (ResultSet) cs.getObject(3);
-            
+
             //PrintWriter pw  =  new PrintWriter(new FileOutputStream("test_cursor.txt",true));
-            
-            
-           
-            
+
+
             while (cursorResultSet.next()) {
-                
+
                 String newoutput = cursorResultSet.getString(1);
-   
-              
+
 
                 StringBuilder builder = new StringBuilder();
 
                 for (char currentChar : newoutput.toCharArray()) {
                     Character replacementChar = null;
                     if (Character.UnicodeBlock.of(currentChar) != Character.UnicodeBlock.BASIC_LATIN) {
-                     // replace with Y
-                     replacementChar = '_';
-                     LOGGER.info("++++ Found " + currentChar );
+                        // replace with Y
+                        replacementChar = '_';
+                        LOGGER.info("++++ Found " + currentChar);
                     }
-                    
+
                     builder.append(replacementChar != null ? replacementChar : currentChar);
                 }
 
                 String newString = builder.toString();
-             
+
                 outputBufferedWriter.write(newString);
                 outputBufferedWriter.write("\n");
                 //pw.println("\n");
                 numrows++;
             }
-            
+
             cs.close();
             cursorResultSet.close();
             //outputBufferedWriter.write("ENDE ���� ���� ENDE \n");
@@ -238,8 +232,8 @@ public class getSessionData implements Runnable {
             outputBufferedWriter.close();
             outputOutputStreamWriter.close();
             outputFileOutputStream.close();
-           
-          
+
+
 //            conn.commit();
 
             LOGGER.info("Exported to " + this.FileName + " rows " + numrows);
@@ -250,24 +244,24 @@ public class getSessionData implements Runnable {
             throw new RuntimeException(e);
         } catch (FileNotFoundException e) {
             e.printStackTrace(System.out);
-            LOGGER.error("2 " +e);
+            LOGGER.error("2 " + e);
             throw new RuntimeException(e);
         } catch (IOException e) {
             e.printStackTrace(System.out);
-            LOGGER.error("3 " +e);
+            LOGGER.error("3 " + e);
             throw new RuntimeException(e);
         } catch (Exception e) {
             e.printStackTrace(System.out);
-            LOGGER.error("EX " +e.toString());
+            LOGGER.error("EX " + e.toString());
             throw new RuntimeException(e);
         }
 
 
     }
-    
+
     public static String removeDiacriticalMarks(String string) {
         return Normalizer.normalize(string, Normalizer.Form.NFD)
-            .replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
+                .replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
     }
 
     private long getFileSizeMB(File TextFile) {
@@ -308,7 +302,7 @@ public class getSessionData implements Runnable {
                     attributes = Files.readAttributes(filePath, BasicFileAttributes.class);
                 } catch (IOException exception) {
                     System.out.println("Exception handled when trying to get file " + "attributes: " +
-                                       exception.getMessage());
+                            exception.getMessage());
                 }
 
 
@@ -319,7 +313,7 @@ public class getSessionData implements Runnable {
                     attributes2 = Files.readAttributes(filePath2, BasicFileAttributes.class);
                 } catch (IOException exception) {
                     System.out.println("Exception handled when trying to get file " + "attributes: " +
-                                       exception.getMessage());
+                            exception.getMessage());
                 }
 
 
@@ -335,11 +329,11 @@ public class getSessionData implements Runnable {
                 if ((milliseconds > Long.MIN_VALUE) && (milliseconds < Long.MAX_VALUE)) {
                     minutes = Math.round((milliseconds - milliseconds2) / 1000 / 60);
                     LOGGER.debug("Compare " + filePath.toString() + " " + filePath2.toString() + " " +
-                                 Math.round((milliseconds - milliseconds2) / 1000 / 60) + " Minutes old ");
+                            Math.round((milliseconds - milliseconds2) / 1000 / 60) + " Minutes old ");
 
                     LOGGER.debug("Creation time \n" + attributes.creationTime().toString() + " \n " +
-                                 attributes2.creationTime().toString() + " \n " + milliseconds2 + " \n " +
-                                 milliseconds);
+                            attributes2.creationTime().toString() + " \n " + milliseconds2 + " \n " +
+                            milliseconds);
 
 
                 }
