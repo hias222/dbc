@@ -190,8 +190,6 @@ public class parameter {
     String position_read;
 
 
-
-
     /**
      * @param PropertiesFile
      * @param Source         true=Source false=destination repository
@@ -208,7 +206,6 @@ public class parameter {
         //String position_read;
 
         position_read = null;
-
 
         VSQL_NAME = new ArrayList<String>();
         VSQL_TABLE = new ArrayList<String[]>();
@@ -344,293 +341,6 @@ public class parameter {
     }
 
 
-    public int getNumberKPITableDefinition() {
-
-        int number = 0;
-        for (TableDef Tableitem : getKPITableDefinition) {
-            //only one at the moment
-            number++;
-        }
-        return number;
-    }
-
-    public List<TableDef> getKPITableDefinition() {
-        return getKPITableDefinition;
-    }
-
-    public boolean checkOutputTables(parameter checkPram, Connection destination) {
-        boolean working = true;
-        String stmt;
-        PreparedStatement ps;
-        ResultSet rs = null;
-        String TableName;
-
-        String ALLTables = "";
-
-        //first SQLText
-
-
-        TableName = checkPram.getNameSQLTextTable();
-        ALLTables = TableName;
-
-        LOGGER.debug("check " + TableName);
-
-        stmt = "select SQLID, SCHEMA_NAME,SQL_FULLTEXT, CREATION_TIME from " + TableName + " where rownum = 1";
-
-        try {
-            ps = destination.prepareStatement(stmt);
-            rs = ps.executeQuery(stmt);
-            LOGGER.debug("success");
-        } catch (Exception e) {
-            LOGGER.error("Failed query " + TableName);
-            LOGGER.error(e);
-            working = false;
-            LOGGER.info("Create or change Table");
-            LOGGER.error("create table " + TableName + "\n" + "        (\n" + "        SQLID VARCHAR2(13 BYTE),\n" +
-                    "        SCHEMA_NAME VARCHAR2(30 BYTE),\n" + "        SQL_FULLTEXT CLOB,\n" +
-                    "        CREATION_TIME date\n" + "        );");
-
-        }
-
-
-        TableName = checkPram.getS_ResolutionTab();
-
-        ALLTables = ALLTables + ", " + TableName;
-
-        LOGGER.debug("check " + TableName);
-
-        stmt =
-                "select SQLID, OBJECT_SCHEMA,OBJECT_NAME,OBJECT_TYPE, PARENT_OBJ_ID,PARENT_OBJ_SCHEMA," +
-                        "PARENT_OBJ_NAME,PARENT_OBJ_TYPE,DEPTH from " + TableName + " where rownum = 1";
-
-        try {
-            ps = destination.prepareStatement(stmt);
-            rs = ps.executeQuery(stmt);
-            LOGGER.debug("success");
-        } catch (Exception e) {
-            LOGGER.error("Failed query " + TableName);
-            LOGGER.error(e);
-            working = false;
-            LOGGER.info("Create or change Table");
-
-            LOGGER.error("CREATE TABLE " + TableName + "\n" + "(\n" + "  ID NUMBER(10, 0) NOT NULL \n" +
-                    ", SQLID VARCHAR2(64) \n" + ", OBJECT_SCHEMA VARCHAR2(64) \n" +
-                    ", OBJECT_NAME VARCHAR2(1024) \n" + ", OBJECT_TYPE VARCHAR2(32) \n" +
-                    ", PARENT_OBJ_ID NUMBER(10,0)\n" + ", PARENT_OBJ_SCHEMA VARCHAR2(64) \n" +
-                    ", PARENT_OBJ_NAME VARCHAR2(64) \n" + ", PARENT_OBJ_TYPE VARCHAR2(64) \n" +
-                    ", DEPTH NUMBER(5, 0) \n);");
-
-
-        }
-
-        //CREATE SEQUENCE VIEW_RES_IDSDS_RESULT_SEQ INCREMENT BY 1 START WITH 1;
-        //select VIEW_RES_IDSDS_RESULT_SEQ.NEXTVAL from dual;
-
-        stmt = "select " + TableName + "_SEQ.NEXTVAL from dual";
-
-        try {
-            ps = destination.prepareStatement(stmt);
-            rs = ps.executeQuery(stmt);
-            LOGGER.debug("success");
-        } catch (Exception e) {
-            LOGGER.error("Failed SEQUENCE " + TableName + "_SEQ");
-            LOGGER.error(e);
-            working = false;
-            LOGGER.info("Create or change Sequence");
-
-            LOGGER.error("CREATE SEQUENCE " + TableName + "_SEQ INCREMENT BY 1 START WITH 1;");
-
-
-        }
-
-
-        TableName = checkPram.getS_ResolutionCol();
-        ALLTables = ALLTables + ", " + TableName;
-
-        LOGGER.debug("check " + TableName);
-
-        stmt = "select OBJECT_ID, COLUMN_NAME,COLUMN_USE from " + TableName + " where rownum = 1";
-
-        try {
-            ps = destination.prepareStatement(stmt);
-            rs = ps.executeQuery(stmt);
-            LOGGER.debug("success");
-        } catch (Exception e) {
-            LOGGER.error("Failed query " + TableName);
-            LOGGER.error(e);
-            working = false;
-            LOGGER.info("Create or change Table");
-            LOGGER.error("CREATE TABLE " + TableName + "\n" + "(\n" + "  OBJECT_ID NUMBER(10, 0) NOT NULL \n" +
-                    ", COLUMN_NAME VARCHAR2(64) NOT NULL \n" + ", COLUMN_USE VARCHAR2(20) NOT NULL \n" + ");\n");
-
-
-        }
-
-
-        TableName = checkPram.getNameSessionTable();
-        ALLTables = ALLTables + ", " + TableName;
-
-        LOGGER.debug("check " + TableName);
-
-        boolean start = true;
-
-        List<String> necassaryFields =
-                new ArrayList(Arrays.asList("SQL_ID", "SQL_CHILD_NUMBER", "SQL_PREV_ID", "PREV_CHILD_NUMBER"));
-
-        int foundFields = 0;
-
-        String CreateIt = "create table " + TableName + "\n(\n";
-        stmt = "select ";
-
-        for (ColDef item : checkPram.getFieldsSessionTable()) {
-
-            Iterator<String> i = necassaryFields.iterator();
-            while (i.hasNext()) {
-                String o = (String) i.next();
-                //some condition
-                if (o.equalsIgnoreCase(item.getColumnName())) {
-                    i.remove();
-                }
-
-            }
-
-            //  if (item.getColumnName().equalsIgnoreCase("SQL_PREV_ID") ||
-            //      item.getColumnName().equalsIgnoreCase("PREV_CHILD_NUMBER") ||
-            //      item.getColumnName().equalsIgnoreCase("sql_prev_num")) {
-            //      LOGGER.info("we don't need " + item.getColumnName());
-            //  } else {
-
-            if (!start) {
-                stmt = stmt + ", \n";
-                CreateIt = CreateIt + ", \n";
-            }
-
-
-            stmt = stmt + item.getColumnName();
-            CreateIt = CreateIt + item.getColumnName() + " varchar(64) ";
-
-
-            if (start) {
-                start = false;
-
-            }
-            //}
-
-
-        }
-
-
-        for (String AGG_COL : this.getSessionsTableDefinition().Aggregates) {
-            stmt = stmt + ",";
-            stmt = stmt + "F_" + AGG_COL;
-            CreateIt = CreateIt + ", " + "\nF_" + AGG_COL + " number ";
-            //LOGGER.error("F_" + AGG_COL);
-        }
-
-        stmt = stmt + ",COLLECTION_DATE";
-        CreateIt = CreateIt + ", \nCOLLECTION_DATE date ";
-
-        stmt = stmt + " from " + TableName + " where rownum = 1 ";
-        CreateIt = CreateIt + "\n );";
-
-
-        try {
-            ps = destination.prepareStatement(stmt);
-            rs = ps.executeQuery(stmt);
-
-            if (necassaryFields.size() == 0) {
-                LOGGER.debug("success");
-            } else {
-                LOGGER.error("Missing necassary columns ");
-                for (String item : necassaryFields) {
-                    LOGGER.error(item);
-                }
-                working = false;
-
-            }
-
-        } catch (Exception e) {
-            LOGGER.error("Failed query " + TableName);
-            //LOGGER.info(stmt);
-            LOGGER.error(e);
-            working = false;
-            LOGGER.error("Create or change Table");
-            LOGGER.error(CreateIt);
-
-
-        }
-
-        //KPIs
-
-        for (TableDef TableInfos : checkPram.getKPITableDefinition()) {
-
-            TableName = TableInfos.TableName;
-
-            ALLTables = ALLTables + ", " + TableName;
-
-            start = true;
-            LOGGER.debug("check " + TableName);
-
-            stmt = " select COLLECTION_DATE, ";
-            CreateIt = "create table " + TableName + "\n(\n";
-
-            for (ColDef item : TableInfos.getListColumnDef()) {
-                if (!item.getColumnDescription().equalsIgnoreCase("false")) {
-                    if (!start) {
-                        stmt = stmt + ", \n";
-                        CreateIt = CreateIt + ", \n";
-                    }
-
-                    stmt = stmt + item.getColumnName();
-                    if (item.getColumnName().equalsIgnoreCase("LAST_ACTIVE_TIME")) {
-                        CreateIt = CreateIt + item.getColumnName() + " varchar2(64) ";
-                    } else {
-                        CreateIt = CreateIt + item.getColumnName() + " varchar2(64) ";
-                    }
-
-
-                    if (start) {
-                        start = false;
-
-                    }
-                }
-
-            }
-
-            for (String AGG_COL : TableInfos.Aggregates) {
-                stmt = stmt + ", \n";
-                stmt = stmt + "F_" + AGG_COL;
-
-                CreateIt = CreateIt + ",\n" + "F_" + AGG_COL + " number ";
-            }
-
-            stmt = stmt + " from " + TableName + " where rownum = 1 ";
-            CreateIt = CreateIt + ", \nCOLLECTION_DATE date ";
-            CreateIt = CreateIt + "\n );";
-
-            try {
-                ps = destination.prepareStatement(stmt);
-                rs = ps.executeQuery(stmt);
-                LOGGER.debug("success");
-            } catch (Exception e) {
-                LOGGER.error("Failed query " + TableName);
-                LOGGER.error(e);
-                working = false;
-                LOGGER.info("Create or change Table");
-                LOGGER.debug("Check Statement was " + stmt);
-                LOGGER.error(CreateIt);
-
-
-            }
-
-
-        }
-
-        LOGGER.info("SUCCESS on " + ALLTables);
-
-
-        return working;
-    }
 
 
     private void getDetailedTableData(Properties properties) {
@@ -767,13 +477,6 @@ public class parameter {
         return output;
     }
 
-    /*
-    public String SessionDir() {
-        return this.A_SESSION_FILEDIR;
-
-
-    }
-*/
 
     public void SetReadPosition(String ReadPosition) {
 
@@ -809,9 +512,6 @@ public class parameter {
 
     }
 
-    public int getKPInumbers() {
-        return this.VSQL_NAME.size();
-    }
 
     public List<String> getTableKPIvsql() {
         //first get all Names
@@ -844,96 +544,6 @@ public class parameter {
     }
 
 
-    public String[] searchSessionDirs() {
-        //get Dirs out of Filesystem
-        String[] SessionDirs = new String[this.S_NUMBER_INSTANCES];
-
-        // starting at A_BASE_DIR we search for data
-
-
-        return SessionDirs;
-    }
-
-    public String getNameSessionTable() {
-        return S_sessiontable;
-    }
-
-    public String getNameSQLTextTable() {
-        return S_sqltexttable;
-    }
-
-    public TableDef getSessionsTableDefinition() {
-        TableDef newentry = new TableDef();
-
-        Set<String> uniqueColumnAggs = new HashSet<String>();
-        List<String> Keys = new ArrayList<String>();
-
-        newentry.TableName = this.S_sessiontable;
-        newentry.TableType = "SESSION";
-        newentry.FILE_NAME = "v$session";
-
-        newentry.Aggregates = SESSION_TABLE_AGGS;
-
-
-        //database,instance,username,sql_id,sql_child_number,sql_prev_id,PREV_CHILD_NUMBER
-
-        String[] standard_keys = new String[]{
-                "database", "instance", "username", "sql_id", "sql_child_number", "sql_prev_id", "PREV_CHILD_NUMBER"
-        };
-
-
-        //thats wrong  minus AGGS ??
-
-        for (String item : standard_keys) {
-            uniqueColumnAggs.add(item.toUpperCase());
-        }
-
-        for (String item : SESSION_TABLE) {
-            if (uniqueColumnAggs.contains(item.toUpperCase())) {
-                Keys.add(item);
-            }
-        }
-
-        String[] keys = new String[Keys.size()];
-        for (int i = 0; i < Keys.size(); i++)
-            keys[i] = Keys.get(i);
-
-        newentry.Keys = keys;
-
-        LOGGER.debug("KPI table length " + SESSION_TABLE.length);
-        for (ColDef items : this.getFieldsSessionTable()) {
-            newentry.addColumnDef(items);
-        }
-
-
-        LOGGER.debug(newentry.toDetailString());
-        return newentry;
-    }
-
-    public List<ColDef> getFieldsSessionTable() {
-
-        List<ColDef> ColDescription;
-        ColDescription = new ArrayList<ColDef>();
-
-        //here changes needed
-
-        for (int i = 0; i < this.SESSION_TABLE.length; i++) {
-            ColDef Definition = new ColDef(this.SESSION_TABLE[i]);
-            //Defenition.ColumnName = this.SESSION_TABLE[i];
-            Definition.addCollTyps(Integer.parseInt(this.SESSION_TABLE_DEFINITION[i][0]),
-                    this.SESSION_TABLE_DEFINITION[i][1], this.SESSION_TABLE_DEFINITION[i][2]);
-            // Defenition.Type = this.SESSION_TABLE_DEFINITION[i][1];
-            //   Defenition.ColumnDescription = this.SESSION_TABLE_DEFINITION[i][2];
-            //   Defenition.CSVColumnOrder = Integer.parseInt(this.SESSION_TABLE_DEFINITION[i][0]);
-
-            ColDescription.add(Definition);
-
-
-        }
-
-        return ColDescription;
-
-    }
 
     public String getSessionScript() {
         return this.DB_SESSION_SCRIPT;
@@ -949,9 +559,6 @@ public class parameter {
 
     //A_change_hours
 
-    public int getCleanHours() {
-        return this.D_clean_hours;
-    }
 
     public String getStartupTime(int internal_nr) {
         return this.DB_STARTUP[internal_nr];
@@ -1003,22 +610,12 @@ public class parameter {
 
     }
 
-    public String getSQLFileSearch() {
-        return this.S_SQLSearchString;
-    }
-
-    public String getInputDir() {
-        return this.S_inputdir;
-    }
 
 
     public int usemaxPGAMB() {
         return this.A_max_pga_mb;
     }
 
-    public String getSESSIONFileSearch() {
-        return this.S_SESSIONSearchString;
-    }
 
 
     private String SessionScript() throws IOException, URISyntaxException {
@@ -1055,36 +652,11 @@ public class parameter {
     }
 
 
-    public String BaseDir() {
-        return this.A_BASE_DIR;
-    }
 
     public String getSourceUserName() {
         return S_ORACLE_USER;
     }
 
-    public Connection getSourceConnection() {
-
-        OracleConnection OracleSource = new OracleConnection();
-
-        Connection source; // = new Connection();
-
-        LOGGER.debug("Source Connection to " + S_ORACLE_USER + "@" + S_ORACLE_TNS);
-
-        try {
-            source = OracleSource.openOracleConnection(S_ORACLE_USER, S_ORACLE_PWD, S_ORACLE_TNS);
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        } catch (InstantiationException e) {
-            throw new RuntimeException(e);
-        } catch (IllegalAccessException e) {
-            throw new RuntimeException(e);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-
-        return source;
-    }
 
     private void getDBData(int internal_nr) {
 
