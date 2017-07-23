@@ -64,6 +64,8 @@ public class parameter {
     private String[] S_ORACLE_JDBCS;
     private int S_NUMBER_INSTANCES = 1;
 
+    ClassLoader objClassLoader = null;
+
     private String S_ORACLE_USER = "system";
     private String S_ORACLE_PWD = "oracle";
 
@@ -187,6 +189,9 @@ public class parameter {
 
     String position_read;
 
+
+
+
     /**
      * @param PropertiesFile
      * @param Source         true=Source false=destination repository
@@ -194,6 +199,10 @@ public class parameter {
     public parameter(String PropertiesFile, boolean Source) {
         // get properties out of db-connection.properties
         Properties properties = new Properties();
+
+        objClassLoader = getClass().getClassLoader();
+
+
         this.Source = Source;
 
         //String position_read;
@@ -211,7 +220,10 @@ public class parameter {
 
             // Load Properties
 
-            FileInputStream in = new FileInputStream(PropertiesFile);
+
+            FileInputStream in = new FileInputStream(objClassLoader.getResource(PropertiesFile).getFile());
+
+            //FileInputStream in = new FileInputStream(PropertiesFile);
             properties.load(in);
             in.close();
 

@@ -156,7 +156,6 @@ public class DataTransfer {
 
         String PropertiesFile;
 
-
         //OracleConnection OracleSource;
 
 

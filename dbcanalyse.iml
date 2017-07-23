@@ -17,5 +17,6 @@
     <orderEntry type="library" name="Maven: org.apache.logging.log4j:log4j-api:2.8.2" level="project" />
     <orderEntry type="library" name="Maven: org.apache.logging.log4j:log4j-jcl:2.8.2" level="project" />
     <orderEntry type="library" name="Maven: org.apache.commons:commons-lang3:3.0" level="project" />
+    <orderEntry type="library" name="Maven: com.oracle.jdbc:ojdbc8:12.2.0.1" level="project" />
   </component>
 </module>
