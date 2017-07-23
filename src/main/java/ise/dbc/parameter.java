@@ -71,7 +71,7 @@ public class parameter {
 
 
     // Attention must be in java files and right deployment
-    private String A_Session_Script = "/sql/dbc_sessions_java.sql";
+    private String A_Session_Script = "dbc_sessions_java.sql";
 
     private String[] S_IGNORED_SCHEMAS = {"SYS", "SYSTEM"};
 
@@ -901,7 +901,6 @@ public class parameter {
     public String toString() {
         String output;
 
-
         if (Source) {
 
             output = "Source mode \n";
@@ -1205,8 +1204,10 @@ public class parameter {
 
     private String SessionScript() throws IOException, URISyntaxException {
 
+        //FileInputStream in = new FileInputStream(objClassLoader.getResource(PropertiesFile).getFile());
 
-        InputStream in = this.getClass().getResourceAsStream(this.A_Session_Script);
+        InputStream in = objClassLoader.getResourceAsStream(this.A_Session_Script);
+        //InputStream in = this.getClass().getResourceAsStream(this.A_Session_Script);
         BufferedReader reader = new BufferedReader(new InputStreamReader(in));
         String line = null;
         String xml = "--- loaded fom file \n";
@@ -1215,28 +1216,7 @@ public class parameter {
             xml = xml + line + "\n";
             //System.out.println("Line read: " + line);
 
-
         }
-
-        //System.out.println(xml);
-
-        //byte[] encoded2 = Files.readAllBytes(Paths.get(this.getClass().getResource("/ise/dbc/dbc_sessions_java.sql").toString()));
-        //String test = new String(encoded2, Charset.defaultCharset());
-
-        //mabey bug
-        //java.net.URL url = this.getClass().getResource("/sql/dbc_sessions_java.sql");
-        //java.nio.file.Path resPath;
-
-
-        //System.out.println("URl " + url.toString());
-
-        //resPath = Paths.get(url.toURI());
-
-        //String xml = new String(Files.readAllBytes(resPath), Charset.defaultCharset());
-        //System.out.println(xml);
-
-        //byte[] encoded = Files.readAllBytes(Paths.get(this.A_Session_Script));
-        //return new String(encoded, Charset.defaultCharset());
 
         return xml;
 
