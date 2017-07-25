@@ -72,9 +72,16 @@ https://github.com/oracle/docker-images/tree/master/OracleDatabase
 ```
 ./buildDockerImage.sh -v 12.2.0.1 -e -o 12.2.0.1 -o --squash
 
-docker run -d --name db12c -p 1521:1521 -p 5500:5500 -e ORACLE_PWD=welcome1 -e ORACLE_SID=ORCL -v /Users/matthiasfuchs/projects/dbc/docker:/u01/app/oracle/oradata oracle/database:12.2.0.1-ee
+docker run -d --name db12c -p 1521:1521 -p 5500:5500 -e ORACLE_PWD=welcome1 -e ORACLE_SID=ORCL -v /Users/matthiasfuchs/projects/dbc/docker:/opt/oracle/oradata oracle/database:12.2.0.1-ee
 
 ```
 
+# Change DB
 
+```
+CREATE TEMPORARY TABLESPACE temp2
+   TEMPFILE 'temp01.dbf' SIZE 500M AUTOEXTEND ON;
+
+ALTER DATABASE DEFAULT TEMPORARY TABLESPACE temp2;
+```
 

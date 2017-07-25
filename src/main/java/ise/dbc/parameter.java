@@ -1,54 +1,18 @@
 package ise.dbc;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-
-import java.io.IOException;
-
-import java.io.InputStream;
-
-import java.io.InputStreamReader;
-
-
-import java.net.URISyntaxException;
-
-
-import java.nio.file.Files;
-
-
-import java.nio.file.Paths;
-
-import java.sql.Connection;
-
-
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
-import java.sql.Statement;
-
-import java.sql.Timestamp;
-
-import java.text.SimpleDateFormat;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
-import java.util.Properties;
-
-
-import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.impl.Log4JLogger;
+
+import java.io.*;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.sql.*;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.Properties;
 
 
 public class parameter {
@@ -341,8 +305,6 @@ public class parameter {
     }
 
 
-
-
     private void getDetailedTableData(Properties properties) {
 
         String key = "null";
@@ -544,7 +506,6 @@ public class parameter {
     }
 
 
-
     public String getSessionScript() {
         return this.DB_SESSION_SCRIPT;
     }
@@ -611,14 +572,14 @@ public class parameter {
     }
 
 
-
     public int usemaxPGAMB() {
         return this.A_max_pga_mb;
     }
 
 
-
     private String SessionScript() throws IOException, URISyntaxException {
+
+        File tmp_file = null;
 
         //FileInputStream in = new FileInputStream(objClassLoader.getResource(PropertiesFile).getFile());
 
@@ -633,6 +594,30 @@ public class parameter {
             //System.out.println("Line read: " + line);
 
         }
+
+        //we write a example output
+        //tmp_file = new File(this.A_BASE_DIR + "/output.txt");
+        //tmp_file
+
+        File fout = new File(this.A_BASE_DIR + "/output.txt");
+        FileOutputStream fos = new FileOutputStream(fout);
+
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(fos));
+        bw.write("Description of fields in output");
+        bw.newLine();
+        bw.write("sid ");
+        bw.newLine();
+        bw.write("NumberSnaps, NumberIO,  NumberCPU ");
+        bw.newLine();
+
+        bw.write("serial#, username, machine,terminal, osuser, program, program, state, sql_id, sql_child_number, " );
+        bw.write("sql_exec_start, prev_sql_id, PREV_CHILD_NUMBER , prev_exec_start, module, action, ");
+        bw.write("client_identifier, client_info, service_name, ecid, status, sql_exec_id, prev_exec_id");
+
+
+        bw.newLine();
+        bw.close();
+
 
         return xml;
 
@@ -650,7 +635,6 @@ public class parameter {
     public String[] IgnoredSchmes() {
         return this.S_IGNORED_SCHEMAS;
     }
-
 
 
     public String getSourceUserName() {

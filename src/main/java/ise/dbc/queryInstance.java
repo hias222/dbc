@@ -2,7 +2,6 @@ package ise.dbc;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.impl.Log4JLogger;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -72,7 +71,6 @@ public class queryInstance implements Runnable {
     public void run() {
         //
         Future F_SessionData;
-        //Future F_SourceData;
 
         boolean bkpi = false;
 
