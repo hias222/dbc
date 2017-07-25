@@ -194,10 +194,11 @@ BEGIN
   --g_sessions := g_empty_sessions;
   FOR i IN 1 .. tmp_sessions.count
   LOOP
+  -- add SERIAL# !!!
     BEGIN
-      NumberSnaps := SessionSnapNr (tmp_sessions(i).sid || tmp_sessions(i).sql_id || tmp_sessions(i).sql_exec_id ).snap;
-      NumberIO    := SessionSnapNr (tmp_sessions(i).sid || tmp_sessions(i).sql_id || tmp_sessions(i).sql_exec_id ).snap_IO;
-      NumberCPU   := SessionSnapNr (tmp_sessions(i).sid || tmp_sessions(i).sql_id || tmp_sessions(i).sql_exec_id ).snap_CPU;
+      NumberSnaps := SessionSnapNr (tmp_sessions(i).sid || tmp_sessions(i).SERIAL# || tmp_sessions(i).sql_id || tmp_sessions(i).sql_exec_id ).snap;
+      NumberIO    := SessionSnapNr (tmp_sessions(i).sid || tmp_sessions(i).SERIAL# || tmp_sessions(i).sql_id || tmp_sessions(i).sql_exec_id ).snap_IO;
+      NumberCPU   := SessionSnapNr (tmp_sessions(i).sid || tmp_sessions(i).SERIAL# || tmp_sessions(i).sql_id || tmp_sessions(i).sql_exec_id ).snap_CPU;
     EXCEPTION
     WHEN NO_DATA_FOUND THEN
       NumberSnaps := 0;
@@ -215,13 +216,13 @@ BEGIN
       NumberIO                   := NumberIO +1 ;
     END IF;
     --SessionSnapNr (tmp_sessions(i).sid || tmp_sessions(i).sql_id || tmp_sessions(i).prev_sql_id || tmp_sessions(i).sql_exec_id || tmp_sessions(i).prev_exec_id) := NumberSnaps;
-    SessionSnapNr (tmp_sessions(i).sid || tmp_sessions(i).sql_id || tmp_sessions(i).sql_exec_id ).snap     := NumberSnaps;
-    SessionSnapNr (tmp_sessions(i).sid || tmp_sessions(i).sql_id || tmp_sessions(i).sql_exec_id ).snap_IO  := NumberIO;
-    SessionSnapNr (tmp_sessions(i).sid || tmp_sessions(i).sql_id || tmp_sessions(i).sql_exec_id ).snap_CPU := NumberCPU;
+    SessionSnapNr (tmp_sessions(i).sid || tmp_sessions(i).SERIAL# || tmp_sessions(i).sql_id || tmp_sessions(i).sql_exec_id ).snap     := NumberSnaps;
+    SessionSnapNr (tmp_sessions(i).sid || tmp_sessions(i).SERIAL# || tmp_sessions(i).sql_id || tmp_sessions(i).sql_exec_id ).snap_IO  := NumberIO;
+    SessionSnapNr (tmp_sessions(i).sid || tmp_sessions(i).SERIAL# || tmp_sessions(i).sql_id || tmp_sessions(i).sql_exec_id ).snap_CPU := NumberCPU;
     tmp_sessions(i).SNAP                                                                                   := NumberSnaps;
     tmp_sessions(i).SNAP_IO                                                                                := NumberIO;
     tmp_sessions(i).SNAP_CPU                                                                               := NumberCPU;
-    g_sess_round(tmp_sessions(i).sid || tmp_sessions(i).sql_id || tmp_sessions(i).sql_exec_id )            := tmp_sessions(i);
+    g_sess_round(tmp_sessions(i).sid || tmp_sessions(i).SERIAL# || tmp_sessions(i).sql_id || tmp_sessions(i).sql_exec_id )            := tmp_sessions(i);
   END LOOP;
   --- waiting
   sys.dbms_lock.sleep(p_samplewaitms / 1000);

@@ -616,10 +616,12 @@ public class parameter {
         bw.newLine();
         bw.newLine();
         bw.write("NumberCPU");
+        bw.newLine();
         bw.write("(tmp_sessions(i).state != 'WAITING') OR (tmp_sessions(i).state = 'WAITING' AND tmp_sessions(i).wait_class != 'Idle') ");
 
         bw.newLine();
         bw.write("NumberIO");
+        bw.newLine();
         bw.write("tmp_sessions(i).wait_class = 'User I/O' ");
         bw.close();
 
