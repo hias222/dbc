@@ -613,9 +613,14 @@ public class parameter {
         bw.write("serial#, username, machine,terminal, osuser, program, program, state, sql_id, sql_child_number, " );
         bw.write("sql_exec_start, prev_sql_id, PREV_CHILD_NUMBER , prev_exec_start, module, action, ");
         bw.write("client_identifier, client_info, service_name, ecid, status, sql_exec_id, prev_exec_id");
-
+        bw.newLine();
+        bw.newLine();
+        bw.write("NumberCPU");
+        bw.write("(tmp_sessions(i).state != 'WAITING') OR (tmp_sessions(i).state = 'WAITING' AND tmp_sessions(i).wait_class != 'Idle') ");
 
         bw.newLine();
+        bw.write("NumberIO");
+        bw.write("tmp_sessions(i).wait_class = 'User I/O' ");
         bw.close();
 
 
