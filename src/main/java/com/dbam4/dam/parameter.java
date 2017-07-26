@@ -183,7 +183,7 @@ public class parameter {
 
             // Load Properties
 
-            LOGGER.info ("read properties from file " + PropertiesFile);
+            LOGGER.info("read base resource properties from file ");
 
             InputStream in = objClassLoader.getResourceAsStream(PropertiesFile);
             properties.load(in);
@@ -243,7 +243,7 @@ public class parameter {
                 this.SetReadPosition("analyticserver.metadata.maxNumberLoadSQLs");
                 A_max_number_load_sqls =
                         Integer.parseInt(properties.getProperty("analyticserver.metadata.maxNumberLoadSQLs"));
-                //A_change_hours
+
 
                 this.SetReadPosition("set number of instances");
                 S_NUMBER_INSTANCES = S_ORACLE_JDBCS.length;
@@ -581,7 +581,7 @@ public class parameter {
         File tmp_file = null;
 
         InputStream in = objClassLoader.getResourceAsStream(this.A_Session_Script);
-         BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+        BufferedReader reader = new BufferedReader(new InputStreamReader(in));
         String line = null;
         String xml = "--- loaded fom file \n";
         while ((line = reader.readLine()) != null) {
@@ -618,7 +618,6 @@ public class parameter {
         bw.write("tmp_sessions(i).wait_class = 'User I/O' ");
         bw.close();
 
-
         return xml;
 
     }
@@ -639,6 +638,48 @@ public class parameter {
 
     public String getSourceUserName() {
         return S_ORACLE_USER;
+    }
+
+    public void getUserPoperties(String PropertiesFile) {
+        // read own properites;
+        LOGGER.info("read properties from file " + PropertiesFile);
+        try {
+            FileInputStream is = new FileInputStream(new File(PropertiesFile).getPath());
+
+            Properties properties = new Properties();
+
+            properties.load(is);
+            is.close();
+
+            this.SetReadPosition("database.connection.urls");
+            S_ORACLE_JDBCS = properties.getProperty("database.connection.urls").split(",");
+
+            this.SetReadPosition("database.source.user");
+            S_ORACLE_USER = properties.getProperty("database.source.user");
+
+            this.SetReadPosition("database.source.password");
+            S_ORACLE_PWD = properties.getProperty("database.source.password");
+
+            A_BASE_DIR = properties.getProperty("analyticserver.metadata.baseDirectory");
+
+
+        } catch (FileNotFoundException e) {
+            LOGGER.error("File " + PropertiesFile + " not found");
+            e.printStackTrace();
+            System.exit(1);
+        } catch (IOException e) {
+            LOGGER.error("Check your properties at " + position_read);
+            e.printStackTrace();
+            System.exit(1);
+        }  catch (java.lang.NullPointerException e) {
+            LOGGER.error("Check your properties at " + position_read);
+            e.printStackTrace();
+            System.exit(1);
+        } catch (java.lang.NumberFormatException e) {
+            LOGGER.error("Check your properties at " + position_read);
+            e.printStackTrace();
+            System.exit(1);
+        }
     }
 
 

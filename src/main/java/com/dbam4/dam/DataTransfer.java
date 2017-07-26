@@ -7,7 +7,6 @@ import org.apache.commons.logging.LogFactory;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.sql.Connection;
-import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -144,11 +143,9 @@ public class DataTransfer {
         }
 
         String PropertiesFile;
-
-        //OracleConnection OracleSource;
-
-
+        // Loading base property files from resources
         PropertiesFile = "db-connection.properties";
+        parameter parameters = new parameter(PropertiesFile, true);
 
         if (checkArguments(args)) {
 
@@ -158,6 +155,8 @@ public class DataTransfer {
                     if (args[i].equals("-d")) {
                         PropertiesFile = args[(i + 1)].toString();
                         System.out.println("Properties " + PropertiesFile);
+
+                        parameters.getUserPoperties(PropertiesFile);
                     }
 
                     if (args[i].equals("-help")) {
@@ -171,15 +170,8 @@ public class DataTransfer {
         }
 
 
-        // get properties out of db-connection.properties
-        //Properties properties = new Properties();
-
         try {
 
-            //cLOBFileExample = new DataTransfer(PropertiesFile);
-            //OracleSource = new OracleConnection();
-
-            parameter parameters = new parameter(PropertiesFile, true);
 
             LOGGER.info(parameters.toString());
 
