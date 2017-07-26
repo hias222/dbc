@@ -1,4 +1,8 @@
-package ise.dbc;
+package com.dbam4.dam;
+
+//
+// com.dbam4.dam
+//
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -20,7 +24,7 @@ public class parameter {
 
     // see http://www.javaquery.com/2015/10/how-to-read-properties-file-from.html
 
-    private static final Log LOGGER = LogFactory.getLog(ise.dbc.parameter.class);
+    private static final Log LOGGER = LogFactory.getLog(parameter.class);
 
     //  private String PropertiesFile;
 
@@ -610,7 +614,7 @@ public class parameter {
         bw.write("NumberSnaps, NumberIO,  NumberCPU ");
         bw.newLine();
 
-        bw.write("serial#, username, machine,terminal, osuser, program, program, state, sql_id, sql_child_number, " );
+        bw.write("serial#, username, machine,terminal, osuser, program, state, sql_id, sql_child_number, ");
         bw.write("sql_exec_start, prev_sql_id, PREV_CHILD_NUMBER , prev_exec_start, module, action, ");
         bw.write("client_identifier, client_info, service_name, ecid, status, sql_exec_id, prev_exec_id");
         bw.newLine();
