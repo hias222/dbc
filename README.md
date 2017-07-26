@@ -9,7 +9,19 @@ mvn clean package
 
 ## Run
 ```
-java -jar target/dbc-analyse-1.0-SNAPSHOT.jar
+java -jar target/dbc-analyse-1.0-SNAPSHOT-jar-with-dependencies.jar -d test.properties
+```
+test.properties is a use definied file with this entries
+```
+# DB Connetcion Information
+# Connect string to every node
+# the tool connects to every node instance
+database.connection.urls=jdbc:oracle:thin:@(DESCRIPTION = (ADDRESS = (PROTOCOL = TCP)(HOST = localhost)(PORT = 1521)) (CONNECT_DATA = (SERVER = DEDICATED) (SERVICE_NAME = orclpdb1)))
+database.source.user=system
+database.source.password=welcome1
+# Folder where to store the session and sql data
+analyticserver.metadata.baseDirectory=/<home>/data
+
 ```
 
 
