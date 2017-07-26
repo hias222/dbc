@@ -172,7 +172,7 @@ public class DataTransfer {
 
 
         // get properties out of db-connection.properties
-        Properties properties = new Properties();
+        //Properties properties = new Properties();
 
         try {
 

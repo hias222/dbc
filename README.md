@@ -1,5 +1,18 @@
 # DBC repository
 
+# Build und Run
+## Build
+
+```
+mvn clean package
+```
+
+## Run
+```
+java -jar target/dbc-analyse-1.0-SNAPSHOT.jar
+```
+
+
 # ojdbc8 driver
 ## use oracle maven
 ```
@@ -76,7 +89,7 @@ docker run -d --name db12c -p 1521:1521 -p 5500:5500 -e ORACLE_PWD=welcome1 -e O
 
 ```
 
-# Change DB
+## Change DB in docker temp
 
 ```
 CREATE TEMPORARY TABLESPACE temp2
@@ -85,7 +98,8 @@ CREATE TEMPORARY TABLESPACE temp2
 ALTER DATABASE DEFAULT TEMPORARY TABLESPACE temp2;
 ```
 
-# use swingbench to make some load
+# Test App
+## use swingbench to make some load
 
 "137";"19";"0";"19";"52398";"30030";"SOE";"AG-001117.fritz.box";"unknown";"matthiasfuchs";"JDBC Thin Client";"WAITING";"";"";"";"147a57cxq3w5y";"0";"2017-07-25 20:42:47";"";"";"";"Swingbench Load Generator";"orclpdb1";"";"ACTIVE";"";"36012";
 ....

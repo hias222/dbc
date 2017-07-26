@@ -171,8 +171,6 @@ public class parameter {
 
         this.Source = Source;
 
-        //String position_read;
-
         position_read = null;
 
         VSQL_NAME = new ArrayList<String>();
@@ -185,14 +183,11 @@ public class parameter {
 
             // Load Properties
 
+            LOGGER.info ("read properties from file " + PropertiesFile);
 
-            FileInputStream in = new FileInputStream(objClassLoader.getResource(PropertiesFile).getFile());
-
-            //FileInputStream in = new FileInputStream(PropertiesFile);
+            InputStream in = objClassLoader.getResourceAsStream(PropertiesFile);
             properties.load(in);
             in.close();
-
-            //Enumeration listprops = properties.propertyNames();
 
 
             A_BASE_DIR = properties.getProperty("analyticserver.metadata.baseDirectory");
@@ -585,11 +580,8 @@ public class parameter {
 
         File tmp_file = null;
 
-        //FileInputStream in = new FileInputStream(objClassLoader.getResource(PropertiesFile).getFile());
-
         InputStream in = objClassLoader.getResourceAsStream(this.A_Session_Script);
-        //InputStream in = this.getClass().getResourceAsStream(this.A_Session_Script);
-        BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+         BufferedReader reader = new BufferedReader(new InputStreamReader(in));
         String line = null;
         String xml = "--- loaded fom file \n";
         while ((line = reader.readLine()) != null) {
@@ -599,9 +591,6 @@ public class parameter {
 
         }
 
-        //we write a example output
-        //tmp_file = new File(this.A_BASE_DIR + "/output.txt");
-        //tmp_file
 
         File fout = new File(this.A_BASE_DIR + "/output.txt");
         FileOutputStream fos = new FileOutputStream(fout);
