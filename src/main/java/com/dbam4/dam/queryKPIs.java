@@ -193,29 +193,28 @@ public class queryKPIs implements Runnable {
 
 
         Date now = new Date();
-
         Calendar calendar = Calendar.getInstance();
-
         calendar.add(Calendar.SECOND, 61);
-
         int modulo = calendar.get(Calendar.MINUTE);
-
+        //LOGGER.info("Modulo  " + modulo + " intervall " + intervall);
 
         int nextstart = 0;
 
-        if (modulo > 0) {
+        int diffbase = (int) (calendar.getTimeInMillis() - now.getTime());
 
+        if (modulo > 0) {
             nextstart = (int) Math.round((Math.floor(modulo / intervall) + 1) * intervall);
+            //LOGGER.info("Modulo  " + nextstart);
             calendar.add(Calendar.MINUTE, -modulo);
         }
-
 
         calendar.set(Calendar.SECOND, 0);
         calendar.set(Calendar.MILLISECOND, 0);
         calendar.add(Calendar.MINUTE, nextstart);
 
-        LOGGER.info("Next start " + (calendar.getTime()) + " now " + now);
         int diff = (int) (calendar.getTimeInMillis() - now.getTime());
+
+        LOGGER.info("Next start " + (calendar.getTime()) + " now " + now + " diff in ms " + diff );
 
 
         if (diff < 0) {

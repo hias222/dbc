@@ -115,3 +115,16 @@ ALTER DATABASE DEFAULT TEMPORARY TABLESPACE temp2;
 
 "137";"19";"0";"19";"52398";"30030";"SOE";"AG-001117.fritz.box";"unknown";"matthiasfuchs";"JDBC Thin Client";"WAITING";"";"";"";"147a57cxq3w5y";"0";"2017-07-25 20:42:47";"";"";"";"Swingbench Load Generator";"orclpdb1";"";"ACTIVE";"";"36012";
 ....
+# Database user
+
+```
+create user dbc identified by welcome1;
+grant connect,resource to dbc;
+grant select on v_$instance to dbc;
+grant select on v_$session to dbc;
+grant select on v_$sql to dbc;
+grant select on v_$mystat to dbc;
+grant select on v_$database to dbc;
+grant select on v_$process to dbc;
+grant execute on SYS.DBMS_LOCK to dbc;
+```

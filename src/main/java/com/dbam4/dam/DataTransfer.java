@@ -82,7 +82,7 @@ public class DataTransfer {
      * Method used to print program usage to the console.
      */
     static public void usage() {
-        System.out.println("\nUsage: java CLOBFileExample \"Text File Name\"\n");
+        System.out.println("\nUsage: java -jar xyz -d properties");
     }
 
 
